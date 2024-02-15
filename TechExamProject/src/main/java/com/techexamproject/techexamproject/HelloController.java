@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -42,10 +43,15 @@ public class HelloController implements Initializable {
     private String date;
     private String gender;
 
+    private ArrayList<Account> storeAccount;
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         genderBox.getItems().addAll(allgender);
         genderBox.setOnAction(this::choiceBoxClick);
+        storeAccount = new ArrayList<>();
     }
 
     @FXML
@@ -60,13 +66,12 @@ public class HelloController implements Initializable {
           boolean proceedAccountCreatioin = CheckInput();
           if(proceedAccountCreatioin) {
               createAccount(firstName, lastName, email, date, gender);
-              showAlert("Message");
+              showAccountMultiple();
           }
           else
           {
               showAlert("Error");
           }
-
     }
 
     @FXML
@@ -80,30 +85,41 @@ public class HelloController implements Initializable {
 
     private void showAlert(String errorType) {
         Alert alert;
-        if(errorType.equals("Error"))
-        {
+
             alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR");
             alert.setHeaderText("DETECTED AN ERROR");
             alert.setContentText("DETECTED AN EMPTY FIELD");
             alert.show();
-        }
-        else
-        {
-            alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("INFORMATION ACQUIRED");
-            alert.setHeaderText("DETAILS:");
-            alert.setContentText(firstName + " " + lastName + " " + "("+gender+")" + "\n" + "Born on " + date + "\n" + email);
-            alert.show();
-        }
+
 
     }
 
     private void createAccount(String firstName, String lastName, String email, String date, String gender) {
-        Account account = new Account(firstName, lastName, email, date, gender);
-        System.out.println(account.getFirstName() + " " + account.getLastName() + " " + "("+account.getGender()+")" + "\n" + "Born on " + account.getMyDate() + "\n" + account.getEmail());
+        storeAccount.add(new Account(firstName, lastName, email, date, gender));
 
+        for(int i = 0; i<storeAccount.size(); i++)
+        {
+            Account account = storeAccount.get(i);
+            System.out.println(account.getFirstName() + " " + account.getLastName() + " " + "("+account.getGender()+")" + "\n" + "Born on " + account.getMyDate() + "\n" + account.getEmail());
+        }
     }
+
+
+    private void showAccountMultiple()
+    {
+        Alert alert;
+        for(int i = 0; i<storeAccount.size(); i++)
+        {
+            Account account = storeAccount.get(i);
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("INFORMATION ACQUIRED");
+            alert.setHeaderText("DETAILS:");
+            alert.setContentText(account.getFirstName() + " " + account.getLastName() + " " + "("+account.getGender()+")" + "\n" + "Born on " + account.getMyDate() + "\n" + account.getEmail());
+            alert.showAndWait();
+        }
+    }
+
 
     private boolean CheckInput() {
         LocalDate dateGet = birthdatepicker.getValue();
@@ -118,7 +134,6 @@ public class HelloController implements Initializable {
 
         return !firstName.isEmpty() && !lastName.isEmpty() && !email.isEmpty() && !date.isEmpty() && !gender.isEmpty();
     }
-
 
 
 }
